@@ -4,9 +4,10 @@ var gravity = .0004;
 var numOfIterations = 5;  
 let button;
 let pointsAreSet;
+let visualize = false;
 
 function setup() {
-  createCanvas(800, 600);
+  createCanvas(windowWidth, windowHeight);
 
   //Case 1
   // let spacing = 25;
@@ -65,29 +66,36 @@ function setup() {
 function draw() {
   background(51);
 
-  button = createButton("Simulate");
-  button.position(0,height);
+  let bWidth = 150;
+  button = createButton("Simulate").size(bWidth,35);
+  button.position(windowWidth/2 - bWidth/2,0);
   button.mouseReleased(function isSetPoints() { pointsAreSet = true; });
 
   if(pointsAreSet){
     Simulate();
-  }else{
-    // for(let i = 0; i < ipoints.length - 1; i++){
-    //   segments[i] = new Segment(ipoints[i], ipoints[i+1]);
-    // }
-
-    for(let i = 0; i < ipoints.length; i++){
-      ipoints[i].show();
-    }
   }
 
   for(let i = 0; i < segments.length; i++){
     segments[i].show();
   }
+
+  for(let i = 0; i < ipoints.length; i++){
+    ipoints[i].show();
+  }
   //frameRate(1);
   //noLoop();
 
   //console.log(ipoints.length);
+
+  if(!pointsAreSet && visualize){
+    fill(255,50);
+    noStroke();
+    circle(start.x, start.y, 14);
+    circle(mouseX, mouseY, 14);
+    stroke(200,50);
+    strokeWeight(3);
+    line(start.x,start.y,mouseX, mouseY);
+  }
 
 }
 
@@ -95,21 +103,22 @@ let start;
 let end;
 let startIndex = 0;
 let endIndex;
+let spFound;
 
 function mousePressed() {
   if(pointsAreSet) return;
   start = createVector(mouseX, mouseY);
+
   for(let i = 0; i < ipoints.length; i++){
     if(dist(start.x, start.y, ipoints[i].pos.x, ipoints[i].pos.y) <= ipoints[i].r){
+      spFound = true;
       start = ipoints[i].pos;
       startIndex = i;
       break;
     }
   }
-  // if(pointsAreSet) return;
-  // 
 
-  // ipoints.push(new Point(createVector(mouseX, mouseY)));
+  visualize = true;
 }
 
 function mouseClicked(){
@@ -123,7 +132,10 @@ function mouseClicked(){
     let startP = new Point(start.copy());
     let endP = new Point(end.copy());
 
-    if(ipoints.length == 0) ipoints.push(startP);
+    if(ipoints.length == 0 || !spFound){
+      ipoints.push(startP);
+      startIndex = ipoints.length - 1;
+    }
 
     let pointFound;
     for(let i = 0; i < ipoints.length; i++){
@@ -135,7 +147,6 @@ function mouseClicked(){
     }
 
     if(!pointFound){
-      console.log("else");
       ipoints.push(endP);
       endIndex = ipoints.length - 1;
     }
@@ -149,6 +160,9 @@ function mouseClicked(){
       }
     }
   }
+
+  spFound = false;
+  visualize = false;
 }
 
 function Simulate() {
@@ -163,14 +177,14 @@ function Simulate() {
   }
   for(let iter = 0; iter < numOfIterations; iter++){
     for(let i = 0; i < segments.length; i++){
-        let segmentCenter = segments[i].a.pos.copy().add(segments[i].b.pos.copy()).mult(0.5);
-        let segmentDir = segments[i].a.pos.copy().sub(segments[i].b.pos.copy()).copy().normalize();
-        if(!segments[i].a.locked){
-          segments[i].a.pos = segmentCenter.copy().add(segmentDir.copy().mult(segments[i].length/2));
-        }
-        if(!segments[i].b.locked){
-          segments[i].b.pos = segmentCenter.copy().sub(segmentDir.copy().mult(segments[i].length/2));
-        }
+      let segmentCenter = segments[i].a.pos.copy().add(segments[i].b.pos.copy()).mult(0.5);
+      let segmentDir = segments[i].a.pos.copy().sub(segments[i].b.pos.copy()).copy().normalize();
+      if(!segments[i].a.locked){
+        segments[i].a.pos = segmentCenter.copy().add(segmentDir.copy().mult(segments[i].length/2));
+      }
+      if(!segments[i].b.locked){
+        segments[i].b.pos = segmentCenter.copy().sub(segmentDir.copy().mult(segments[i].length/2));
+      }
     }
   }
 

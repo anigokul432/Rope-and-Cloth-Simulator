@@ -7,7 +7,7 @@ class Segment{
 
     show(){
         stroke(200);
-        strokeWeight(2);
+        strokeWeight(3);
         line(this.a.pos.x,this.a.pos.y,this.b.pos.x,this.b.pos.y);
     }
 
