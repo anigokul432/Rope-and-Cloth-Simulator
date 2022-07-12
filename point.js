@@ -3,7 +3,7 @@ class Point{
         this.pos = pos.copy();
         this.prevPos = pos.copy();
         this.locked = false;
-        this.r = 7;
+        this.r = 6;
     }
 
     show(){
