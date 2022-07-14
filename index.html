@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Tangerine">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>Rope & Cloth Simulator</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -12,9 +14,32 @@
     <script src="libraries/p5.sound.min.js"></script>
     <script src="segment.js"></script>
     <script src="point.js"></script>
+    <script src="configurations.js"></script>
   </head>
 
   <body>
     <script src="sketch.js"></script>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Instructions</h2>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the Modal Body</p>
+          <p>Some other text...</p>
+        </div>
+        <div class="modal-footer">
+          <button class="button button1">Start</button>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="info.js"></script>
   </body>
 </html>

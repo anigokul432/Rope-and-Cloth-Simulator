@@ -1,95 +1,132 @@
 const ipoints = [];
 const segments = [];
-var gravity = .0004;
+var gravity = 0.0004;
 var numOfIterations = 5;  
-let simButton;
-let resetButton;
 let pointsAreSet;
 let visualize = false;
+
+let simButton;
+let resetButton;
+let pauseButton;
+let CF1Button;
+let CF2Button;
+let iButton;
+
+let fps;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
 
-  let bWidth = 125;
+  modal.style.display = "block";
+
+  let bWidth = 120;
   let bOffset = 15;
   simButton = createButton("Simulate").size(bWidth,30);
-  simButton.style('border', 5);
+  simButton.style('border', 0);
   simButton.style('background-color', '#146dcc');
   simButton.style('color', 'whitesmoke');
-  simButton.style('border-radius', '15px');
-  simButton.style('box-shadow', '0px 0px 8px 0 #111')
-  simButton.position(windowWidth/2 - (bWidth + bOffset),0 + bOffset);
-  simButton.mouseReleased(function isSetPoints() { pointsAreSet = true; });
+  simButton.style('border-radius', '5px');
+  simButton.style('box-shadow', '0px 0px 5px 0 #111');
+  simButton.style('font-family', "'Roboto', sans-serif");
+  simButton.style('transition-duration', '0.15s');
+  simButton.position(windowWidth/2 - (bWidth + bOffset/2) - 15,0 + bOffset);
+  simButton.mouseOver(function changeColor() { simButton.style('background-color', '#277dd9'); });
+  simButton.mouseOut(function changeColor() { simButton.style('background-color', '#146dcc'); });
+  simButton.mousePressed(function changeColor() { simButton.style('background-color', '#175ba3') });
+  simButton.mouseReleased(function isSetPoints() { 
+    pointsAreSet = true; 
+    simButton.style('background-color', '#146dcc');
+  });
 
   resetButton = createButton("Reset").size(bWidth,30);
-  resetButton.style('border', 5);
+  resetButton.style('border', 0);
   resetButton.style('background-color', '#555');
   resetButton.style('color', 'whitesmoke');
-  resetButton.style('border-radius', '15px');
-  resetButton.style('box-shadow', '0px 0px 8px 0 #111')
-  resetButton.position(windowWidth/2 + bOffset,0 + bOffset);
-  resetButton.mousePressed(function isSetPoints() { 
+  resetButton.style('border-radius', '5px');
+  resetButton.style('box-shadow', '0px 0px 5px 0 #111');
+  resetButton.style('font-family', "'Roboto', sans-serif");
+  resetButton.style('transition-duration', '0.15s');
+  resetButton.position(windowWidth/2 + bOffset/2 + 15,0 + bOffset);
+  resetButton.mouseOver(function changeColor() { resetButton.style('background-color', '#666'); });
+  resetButton.mouseOut(function changeColor() { resetButton.style('background-color', '#555'); });
+  resetButton.mouseReleased(function changeColor() { resetButton.style('background-color', '#555');});
+  resetButton.mousePressed(function ResetPoints() { 
     ipoints.splice(0, ipoints.length);
     segments.splice(0, segments.length);
     pointsAreSet = false; 
+    resetButton.style('background-color', '#444');
   });
 
-  //Case 1
-  // let spacing = 25;
-  // for(let i = 0; i < 20; i++){
-  //   ipoints[i] = new Point(createVector(50 + i * spacing, 50));
-  // }
-  // ipoints[11].locked = true;
-  // ipoints[0].locked = true;
+  pauseButton = createButton("| |").size(30,30);
+  pauseButton.style('border', 0);
+  pauseButton.style('background-color', '#555');
+  pauseButton.style('color', 'whitesmoke');
+  pauseButton.style('border-radius', '5px');
+  pauseButton.style('box-shadow', '0px 0px 5px 0 #111');
+  pauseButton.style('font-family', "'Work Sans', sans-serif");
+  pauseButton.style('font-weight', "900");
+  pauseButton.style('transition-duration', '0.15s');
+  pauseButton.position(windowWidth/2-15,0 + bOffset);
+  pauseButton.mouseOver(function changeColor() { pauseButton.style('background-color', '#666'); });
+  pauseButton.mouseOut(function changeColor() { pauseButton.style('background-color', '#555'); });
+  pauseButton.mouseReleased(function changeColor() { pauseButton.style('background-color', '#555');});
+  pauseButton.mousePressed(function ResetPoints() { 
+    pointsAreSet = false; 
+    pauseButton.style('background-color', '#444');
+  });
 
-  // for(let i = 0; i < ipoints.length - 1; i++){
-  //   segments[i] = new Segment(ipoints[i], ipoints[i+1]);
-  // }
+  CF1Button = createButton("Configuration 1").size(bWidth,30);
+  CF1Button.style('border', 0);
+  CF1Button.style('background-color', '#EEE');
+  CF1Button.style('color', '#111');
+  CF1Button.style('border-radius', '5px');
+  CF1Button.style('box-shadow', '0px 0px 5px 0 #111');
+  CF1Button.style('font-family', "'Roboto', sans-serif");
+  CF1Button.style('transition-duration', '0.15s');
+  CF1Button.position(windowWidth - bWidth - bOffset, bOffset);
+  CF1Button.mouseOver(function changeColor() { CF1Button.style('background-color', '#DDD'); });
+  CF1Button.mouseOut(function changeColor() { CF1Button.style('background-color', '#EEE'); });
+  CF1Button.mouseReleased(function changeColor() { CF1Button.style('background-color', '#EEE');});
+  CF1Button.mousePressed(function changeColor() { CF1Button.style('background-color', '#AAA'); });
+  CF1Button.mouseClicked(Configuration1);
 
-  //Case 2
-  let spacing = 28;
-  let gridSize = 22;
-  for(let i = 0; i < gridSize * gridSize; i++){
-    ipoints[i] = new Point(createVector(150 + (i%gridSize) * spacing, 50 + spacing * Math.floor(i/gridSize)));
-  }
-  ipoints[0].locked = true;
-  ipoints[7].locked = true;
-  ipoints[15].locked = true;
-  ipoints[21].locked = true;
+  CF2Button = createButton("Configuration 2").size(bWidth,30);
+  CF2Button.style('border', 0);
+  CF2Button.style('background-color', '#EEE');
+  CF2Button.style('color', '#111');
+  CF2Button.style('border-radius', '5px');
+  CF2Button.style('box-shadow', '0px 0px 5px 0 #111');
+  CF2Button.style('font-family', "'Roboto', sans-serif");
+  CF2Button.style('transition-duration', '0.15s');
+  CF2Button.position(windowWidth - bWidth - bOffset, 1.5*bOffset + 30);
+  CF2Button.mouseOver(function changeColor() { CF2Button.style('background-color', '#DDD'); });
+  CF2Button.mouseOut(function changeColor() { CF2Button.style('background-color', '#EEE'); });
+  CF2Button.mouseReleased(function changeColor() { CF2Button.style('background-color', '#EEE');});
+  CF2Button.mousePressed(function changeColor() { CF2Button.style('background-color', '#AAA'); });
+  CF2Button.mouseClicked(Configuration2);
 
-  for(let i = 0; i < (gridSize-1); i++){
-    for(let j = 0; j < gridSize; j++){
-      segments.push(new Segment(ipoints[i+j*gridSize], ipoints[(i+j*gridSize)+1]));
-    }
-  }
+  iButton = createButton("i").size(30,30);
+  iButton.style('border-radius', "15px");
+  iButton.style('font-size', "20px");
+  iButton.style('background-color', '#000');
+  iButton.style('border', 0);
+  iButton.style('color', 'whitesmoke');
+  iButton.style('font-weight', 'bold');
+  iButton.style('opacity', '0.5');
+  iButton.style('font-family', "'Roboto', serif");
+  iButton.style('transition-duration', '0.15s');
+  iButton.position(bOffset, bOffset);
+  iButton.mouseOver(function changeColor() { iButton.style('opacity', '0.9'); });
+  iButton.mouseOut(function changeColor() { iButton.style('opacity', '0.5'); });
+  iButton.mouseReleased(function changeColor() { iButton.style('background-color', '#000');});
+  iButton.mousePressed(function changeColor() { iButton.style('background-color', '#333'); });
+  iButton.mouseClicked(function display() { modal.style.display = "block"; });
 
-  for(let i = 0; i < (gridSize)*(gridSize-1); i++){
-    segments.push(new Segment(ipoints[i], ipoints[i+gridSize]));
-  }
-
-  //Case 3
-  // let spacing = 14;
-  // let gridSize = 30;
-  // for(let i = 0; i < gridSize * gridSize; i++){
-  //   ipoints[i] = new Point(createVector(150 + (i%gridSize) * spacing, 50 + spacing * Math.floor(i/gridSize)));
-  // }
-  // //ipoints[0].locked = true;
-  // ipoints[430].locked = true;
-
-  // for(let i = 0; i < (gridSize-1); i++){
-  //   for(let j = 0; j < gridSize; j++){
-  //     segments.push(new Segment(ipoints[i+j*gridSize], ipoints[(i+j*gridSize)+1]));
-  //   }
-  // }
-
-  // for(let i = 0; i < (gridSize)*(gridSize-1); i++){
-  //   segments.push(new Segment(ipoints[i], ipoints[i+gridSize]));
-  // }
 }
 
 function draw() {
-  background(51);
+  background(40);
 
   if(pointsAreSet){
     Simulate();
@@ -120,7 +157,7 @@ function draw() {
   }
 
   //draw fps
-  let fps = frameRate();
+  fps = frameRate();
   fill(255);
   stroke(0);
   text("FPS: " + fps.toFixed(2), 10, height - 10);
@@ -217,10 +254,12 @@ function Simulate() {
   }
 
   //scissor mouse
-  for(var i = 0; i < segments.length; i++){
-    let segmentCenter = segments[i].a.pos.copy().add(segments[i].b.pos.copy()).mult(0.5);
-    if(dist(mouseX,mouseY,segmentCenter.x,segmentCenter.y) < 8){
-      segments.splice(i,1);
+  if(mouseIsPressed){
+    for(var i = 0; i < segments.length; i++){
+      let segmentCenter = segments[i].a.pos.copy().add(segments[i].b.pos.copy()).mult(0.5);
+      if(dist(mouseX,mouseY,segmentCenter.x,segmentCenter.y) < 16){
+        segments.splice(i,1);
+      }
     }
   }
 
