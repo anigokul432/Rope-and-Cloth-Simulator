@@ -141,10 +141,6 @@ function draw() {
   for(let i = 0; i < ipoints.length; i++){
     ipoints[i].show();
   }
-  //frameRate(1);
-  //noLoop();
-
-  //console.log(ipoints.length);
 
   if(!pointsAreSet && visualize){
     fill(255,50);
@@ -271,14 +267,11 @@ function Simulate() {
 function shuffle(array) {
   let currentIndex = array.length,  randomIndex;
 
-  // While there remain elements to shuffle.
   while (currentIndex != 0) {
-
-    // Pick a remaining element.
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
-    // And swap it with the current element.
+    //swap
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex], array[currentIndex]];
   }
